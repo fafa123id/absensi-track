@@ -7,12 +7,7 @@ import NavbarLayout from '@/Layouts/NavbarLayout.vue';
 <template>
     <div>
         <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
-            >
-                <NavbarLayout />
-            </nav>
-
+            <NavbarLayout />
             <!-- Page Heading -->
             <header
                 class="bg-white shadow"
