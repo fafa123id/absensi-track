@@ -6,6 +6,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { Link } from "@inertiajs/vue3";
+import Button from "@/Components/Button.vue";
 const showingNavigationDropdown = ref(false);
 </script>
 
@@ -41,13 +42,13 @@ const showingNavigationDropdown = ref(false);
                     class="hidden sm:ms-6 sm:flex sm:items-center"
                 >
                     <!-- Settings Dropdown -->
-                    <div class="relative ms-3">
-                        <Dropdown align="right" width="48">
+                    <div class="relative ms-3" >
+                        <Dropdown  align="right" width="48">
                             <template #trigger>
                                 <span class="inline-flex rounded-md">
-                                    <button
+                                    <Button
                                         type="button"
-                                        class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                        :active="route().current('profile.edit')"
                                     >
                                         {{ $page.props.auth.user?.name }}
 
@@ -198,7 +199,7 @@ const showingNavigationDropdown = ref(false);
                 </div>
 
                 <div class="mt-3 space-y-1">
-                    <ResponsiveNavLink :href="route('profile.edit')">
+                    <ResponsiveNavLink :href="route('profile.edit')" :active="route().current('profile.edit')">
                         Profile
                     </ResponsiveNavLink>
                     <ResponsiveNavLink
