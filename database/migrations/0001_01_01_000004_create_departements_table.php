@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
-            $table->uuid('token')->unique();
+            $table->string('token')->unique();
             $table->timestamps();
         });
     }
