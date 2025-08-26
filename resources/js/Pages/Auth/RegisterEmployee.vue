@@ -95,7 +95,7 @@ const submit = () => {
                         :message="form.errors.password_confirmation"
                     />
                 </div>
-                <div v-if="form.token !== null" class="mt-4">
+                <div class="mt-4">
                     <InputLabel
                         for="token"
                         value="Input Token"

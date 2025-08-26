@@ -18,14 +18,10 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
     Route::get('register/admin', function () {
-        return Inertia::render('Auth/Register', [
-            'role' => 'admin'
-        ]);
+        return Inertia::render('Auth/RegisterAdmin');
     })->name('register.admin');
     Route::get('register/employee', function () {
-        return Inertia::render('Auth/Register', [
-            'role' => 'employee'
-        ]);
+        return Inertia::render('Auth/RegisterEmployee');
     })->name('register.employee');
     Route::post('register/admin', [RegisteredAdminController::class, 'store'])->name('register.admin');
     Route::post('register/employee', [RegisteredEmployeeController::class, 'store'])->name('register.employee');
