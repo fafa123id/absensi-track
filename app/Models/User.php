@@ -23,7 +23,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'company_id',
-        'department_id'
+        'departement_id'
     ];
 
     /**
@@ -48,11 +48,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function department()
+    public function departements()
     {
         return $this->belongsTo(Departement::class);
     }
-    public function company()
+    public function companies()
     {
         return $this->belongsTo(Company::class);
     }

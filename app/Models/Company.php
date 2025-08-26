@@ -18,7 +18,7 @@ class Company extends Model
         'email',
     ];
 
-    public function departments()
+    public function departements()
     {
         return $this->hasMany(Departement::class);
     }

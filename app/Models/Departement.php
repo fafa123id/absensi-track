@@ -17,7 +17,7 @@ class Departement extends Model
         'token',
     ];
 
-    public function company()
+    public function companies()
     {
         return $this->belongsTo(Company::class);
     }
