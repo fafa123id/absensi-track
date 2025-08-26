@@ -6,16 +6,23 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import NavbarLayout from "@/Layouts/NavbarLayout.vue";
+const props = defineProps({
+    role: {
+        type: String,
+        default: "employee",
+    },
+});
 const form = useForm({
     name: "",
     email: "",
     password: "",
     password_confirmation: "",
+    Token: props.role === "employee" ? "" : null,
 });
 
 const submit = () => {
-    form.post(route("register"), {
-        onFinish: () => form.reset("password", "password_confirmation"),
+    form.post(route("register." + props.role), {
+        onFinish: () => form.reset("password", "password_confirmation", "Token"),
     });
 };
 </script>
@@ -91,6 +98,26 @@ const submit = () => {
                     <InputError
                         class="mt-2"
                         :message="form.errors.password_confirmation"
+                    />
+                </div>
+                <div v-if="form.Token !== null" class="mt-4">
+                    <InputLabel
+                        for="Token"
+                        value="Input Token"
+                    />
+
+                    <TextInput
+                        id="Token"
+                        type="password"
+                        class="mt-1 block w-full"
+                        v-model="form.Token"
+                        required
+                        autocomplete="Input Token"
+                    />
+
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.Token"
                     />
                 </div>
 
