@@ -15,25 +15,26 @@ use Inertia\Inertia;
 use Inertia\Response;
 class RegisteredEmployeeController extends Controller
 {
-        /**
+    /**
      * Handle an incoming registration request.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request, $id): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'token' => 'required|string|max:255',
+            'token' => 'required|string|max:255|exists:departements,token',
         ]);
-        $departement=Departement::findOrFail($request->token);
+        $departement = Departement::where('token', $request->token)->firstOrFail();
         $user = $departement->users()->create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role_id' => 1,
+            'company_id' => $departement->company_id,
         ]);
 
         event(new Registered($user));
