@@ -17,6 +17,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    protected $appends = ['is_admin'];
     protected $fillable = [
         'name',
         'email',
@@ -48,12 +49,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function departements()
+    public function departement()
     {
         return $this->belongsTo(Departement::class);
     }
-    public function companies()
+    public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+    public function getIsAdminAttribute(): bool
+    {
+        return $this->role_id === 0;
     }
 }
