@@ -25,7 +25,7 @@ const showingNavigationDropdown = ref(false);
                     </div>
                     <!-- Navigation Links -->
                     <div
-                        v-if="$page.props.auth.user"
+                        v-if="$page.props.auth.user?.is_admin"
                         class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                     >
                         <NavLink
@@ -160,7 +160,7 @@ const showingNavigationDropdown = ref(false);
             }"
             class="sm:hidden"
         >
-            <div v-if="$page.props.auth.user" class="space-y-1 pb-3 pt-2">
+            <div v-if="$page.props.auth.user?.is_admin" class="space-y-1 pb-3 pt-2">
                 <ResponsiveNavLink
                     :href="route('dashboard')"
                     :active="route().current('dashboard')"
@@ -169,7 +169,7 @@ const showingNavigationDropdown = ref(false);
                 </ResponsiveNavLink>
             </div>
 
-            <div v-else class="space-y-1 pb-3 pt-2">
+            <div v-if="!$page.props.auth.user" class="space-y-1 pb-3 pt-2">
                 <ResponsiveNavLink
                     :href="route('login')"
                     :active="route().current('login')"
