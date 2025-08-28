@@ -11,12 +11,19 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $company = auth()->user()->company->firstOrFail();
-        $departements = Departement::where('company_id', $company->id)->paginate(10);
-        $employees = User::where('company_id', $company->id)->paginate(10);
-        return Inertia::render('Dashboard',
+        $company = auth()->user()->company->with('departements')->firstOrFail();
+        $authUserId = auth()->id();
+        $departements = Departement::where('company_id', $company->id)
+            ->with([
+                'users' => function ($query) use ($authUserId) {
+                    $query->where('id', '!=', $authUserId);
+                }
+            ])
+            ->orderBy('id')->paginate(5);
+
+        return Inertia::render(
+            'Dashboard',
             [
-                'employees' => $employees,
                 'departements' => $departements,
                 'company' => $company
             ]
