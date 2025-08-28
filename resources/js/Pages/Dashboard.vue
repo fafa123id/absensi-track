@@ -83,10 +83,9 @@ const isEmployeeListVisible = ref(false);
 
 const selectedDepartment = ref(null);
 
-
 const openListEmployeeModal = (department) => {
-    selectedDepartment.value = department; 
-    isEmployeeListVisible.value = true; 
+    selectedDepartment.value = department;
+    isEmployeeListVisible.value = true;
 };
 
 const closeListEmployeeModal = () => {
@@ -107,7 +106,7 @@ const closeListEmployeeModal = () => {
             </h2>
         </template>
         <AddForm :show="confirmingAddDepartment" @close="closeAddModal" />
-         <EmployeeList 
+        <EmployeeList
             :show="isEmployeeListVisible"
             :department="selectedDepartment"
             @close="closeListEmployeeModal"
@@ -167,9 +166,7 @@ const closeListEmployeeModal = () => {
                                 <th class="px-6 py-3 text-left">
                                     Token Departemen
                                 </th>
-                                <th class="px-6 py-3 text-left">
-                                    Detail
-                                </th>
+                                <th class="px-6 py-3 text-left">Detail</th>
                                 <th class="px-6 py-3 text-left">Aksi</th>
                             </tr>
                         </thead>
@@ -286,7 +283,9 @@ const closeListEmployeeModal = () => {
                                 </td>
                                 <td class="px-6 py-4">
                                     <PrimaryButton
-                                        @click="openListEmployeeModal(departement)"
+                                        @click="
+                                            openListEmployeeModal(departement)
+                                        "
                                     >
                                         Lihat Karyawan
                                     </PrimaryButton>
@@ -345,7 +344,9 @@ const closeListEmployeeModal = () => {
                             </tr>
                         </tbody>
                     </table>
-                    
+                    <div class="p-6 flex items-center justify-center">
+                        <Pagination :links="departements.links" class="mt-6" />
+                    </div>
                 </div>
             </div>
         </div>
