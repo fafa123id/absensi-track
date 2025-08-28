@@ -19,12 +19,12 @@ Route::middleware('guest')->group(function () {
         ->name('register');
     Route::get('register/admin', function () {
         return Inertia::render('Auth/RegisterAdmin');
-    })->name('register.admin');
+    })->name('register.admin.get');
     Route::get('register/employee', function () {
         return Inertia::render('Auth/RegisterEmployee');
-    })->name('register.employee');
-    Route::post('register/admin', [RegisteredAdminController::class, 'store'])->name('register.admin');
-    Route::post('register/employee', [RegisteredEmployeeController::class, 'store'])->name('register.employee');
+    })->name('register.employee.get');
+    Route::post('register/admin', [RegisteredAdminController::class, 'store'])->name('register.admin.post');
+    Route::post('register/employee', [RegisteredEmployeeController::class, 'store'])->name('register.employee.post');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
