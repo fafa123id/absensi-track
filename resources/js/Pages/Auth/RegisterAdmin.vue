@@ -118,7 +118,7 @@ const submit = async () => {
     const isValid = await v$.value.$validate();
     if (!isValid) return;
 
-    form.post(route("register.admin"), {
+    form.post(route("register.admin.post"), {
         onFinish: () => {
             currentStep.value = 1;
             form.reset("password", "password_confirmation");
