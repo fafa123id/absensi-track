@@ -15,7 +15,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(["close"]);
 
 const form = useForm({
     name: null,
@@ -26,17 +26,15 @@ const nameAddInput = ref(null);
 const addDepartment = () => {
     form.post(route("departements.store"), {
         preserveScroll: true,
-        onSuccess: () => closeAndReset(), 
+        onSuccess: () => closeAndReset(),
         onError: () => nameAddInput.value.focus(),
     });
 };
 
 const closeAndReset = () => {
-    emit('close');
-    setTimeout(() => {
-        form.clearErrors();
-        form.reset();
-    }, 300);
+    emit("close");
+    form.clearErrors();
+    form.reset();
 };
 </script>
 
@@ -49,7 +47,8 @@ const closeAndReset = () => {
             <div class="mt-6">
                 <TextInput
                     id="name"
-                    ref="nameAddInput" v-model="form.name"
+                    ref="nameAddInput"
+                    v-model="form.name"
                     type="text"
                     class="mt-1 block w-3/4"
                     placeholder="Nama Departemen"
@@ -59,7 +58,9 @@ const closeAndReset = () => {
                 <InputError :message="form.errors.name" class="mt-2" />
             </div>
             <div class="mt-6 flex justify-end">
-                <SecondaryButton @click="closeAndReset"> Cancel </SecondaryButton>
+                <SecondaryButton @click="closeAndReset">
+                    Cancel
+                </SecondaryButton>
                 <PrimaryButton
                     class="ms-3"
                     :class="{ 'opacity-25': form.processing }"
