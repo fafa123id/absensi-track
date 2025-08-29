@@ -12,6 +12,7 @@ import { confirmAction, showSuccess } from "@/Composables/swal";
 import { ref, nextTick } from "vue";
 import AddForm from "@/Components/Departements/AddForm.vue";
 import EmployeeList from "@/Components/Departements/EmployeeList.vue";
+import EditForm from "@/Components/Departements/EditForm.vue";
 defineProps({
     departements: Object,
     company: Object,
@@ -78,7 +79,19 @@ const openAddModal = () => {
 const closeAddModal = () => {
     confirmingAddDepartment.value = false;
 };
+const confirmingEditDepartment = ref(false);
 
+const openEditModal = (department) => {
+    selectedDepartment.value = department;
+    confirmingEditDepartment.value = true;
+};
+
+const closeEditModal = () => {
+    confirmingEditDepartment.value = false;
+    setTimeout(() => {
+        selectedDepartment.value = null;
+    }, 300);
+};
 const isEmployeeListVisible = ref(false);
 
 const selectedDepartment = ref(null);
@@ -106,18 +119,24 @@ const closeListEmployeeModal = () => {
             </h2>
         </template>
         <AddForm :show="confirmingAddDepartment" @close="closeAddModal" />
+        <EditForm
+            :show="confirmingEditDepartment"
+            :department="selectedDepartment"
+            @close="closeEditModal"
+        />
         <EmployeeList
             :show="isEmployeeListVisible"
             :department="selectedDepartment"
+            :departements="departements.data"
             @close="closeListEmployeeModal"
-        />
+        />  
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-8">
                     <h1 class="text-2xl font-bold mb-4 text-center">
                         Informasi Perusahaan
                     </h1>
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 mb-8">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left">
@@ -126,12 +145,20 @@ const closeListEmployeeModal = () => {
                                 <th class="px-6 py-3 text-left">
                                     Email Perusahaan
                                 </th>
+                                <th class="px-6 py-3 text-left">
+                                    Nomor Perusahaan
+                                </th>
+                                <th class="px-6 py-3 text-left">
+                                    Alamat Perusahaan
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             <tr>
                                 <td class="px-6 py-4">{{ company.name }}</td>
                                 <td class="px-6 py-4">{{ company.email }}</td>
+                                <td class="px-6 py-4">{{ company.phone }}</td>
+                                <td class="px-6 py-4">{{ company.address }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -139,7 +166,7 @@ const closeListEmployeeModal = () => {
                         Daftar Departemen
                         <PrimaryButton
                             @click="openAddModal"
-                            class="bg-green-600 hover:bg-green-700 flex items-center justify-center"
+                            class="bg-green-600 hover:bg-green-700"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -281,30 +308,32 @@ const closeListEmployeeModal = () => {
                                         </button>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 space-x-2">
                                     <PrimaryButton
                                         @click="
                                             openListEmployeeModal(departement)
                                         "
                                     >
-                                        Lihat Karyawan
+                                        Karyawan
+                                    </PrimaryButton>
+                                    <PrimaryButton
+                                        @click="
+                                            openListEmployeeModal(departement)
+                                        "
+                                    >
+                                        Jobdesk
                                     </PrimaryButton>
                                 </td>
                                 <td class="flex flex-row px-6 py-4 gap-2">
                                     <PrimaryButton
-                                        v-if="departement.name !== 'Master'"
-                                        :href="
-                                            route(
-                                                'departements.edit',
-                                                departement.id
-                                            )
-                                        "
+
+                                        @click="openEditModal(departement)"
                                         class="bg-blue-600 hover:bg-blue-700"
                                     >
                                         Edit
                                     </PrimaryButton>
                                     <form
-                                        v-if="departement.name !== 'Master'"
+
                                         @submit.prevent="
                                             deleteDepartment(
                                                 departement.id,
