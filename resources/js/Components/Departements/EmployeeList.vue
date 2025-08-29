@@ -2,6 +2,10 @@
 import Modal from "@/Components/Modal.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import { useForm } from "@inertiajs/vue3";
+import { confirmAction } from "@/Composables/swal";
+import { ref } from "vue";
+import EditEmployeeModal from "@/Components/Departements/EditEmployeeModal.vue";
 
 const props = defineProps({
     show: {
@@ -12,12 +16,74 @@ const props = defineProps({
         type: Object,
         default: null,
     },
+    departements: {
+        type: Array,
+        default: () => [],
+    },
 });
+const form = useForm({});
 
+const ConfirmDelete = ref(false);
+const selectedEmployeeId = ref(null);
+const selectedEmployee = ref(null);
+
+const deleteEmployeeModal = (employeeId) => {
+    selectedEmployeeId.value = employeeId;
+    ConfirmDelete.value = true;
+};
+const editEmployee = ref(false);
+
+const openEditEmployeeModal = (employee) => {
+    editEmployee.value = true;
+    selectedEmployee.value = employee;
+};
+const closeEditEmployeeModal = () => {
+    editEmployee.value = false;
+    emit("close");
+};
 const emit = defineEmits(["close"]);
+
+const deleteEmployee = (employeeId) => {
+    form.delete(route("employees.destroy", employeeId), {
+        preserveScroll: true,
+        onFinish: () => {
+            emit("close");
+            ConfirmDelete.value = false;
+        },
+        onError: () => {
+            ConfirmDelete.value = false;
+        },
+    });
+};
 </script>
 
 <template>
+    <EditEmployeeModal
+        :show="editEmployee"
+        :employee="selectedEmployee"
+        :departements="props.departements"
+        @close="closeEditEmployeeModal"
+    />
+    <Modal :show="ConfirmDelete" @close="ConfirmDelete = false">
+        <div class="p-6">
+            <h2 class="text-lg font-medium text-gray-900">Hapus Karyawan</h2>
+            <p class="mt-2 text-sm text-gray-600">
+                Apakah Anda yakin ingin menghapus karyawan ini?
+            </p>
+            <div class="mt-6 flex justify-end">
+                <SecondaryButton @click="ConfirmDelete = false">
+                    Batal
+                </SecondaryButton>
+                <PrimaryButton
+                    @click="deleteEmployee(selectedEmployeeId)"
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                >
+                    Hapus
+                </PrimaryButton>
+            </div>
+        </div>
+    </Modal>
     <Modal :show="props.show" @close="$emit('close')">
         <div class="p-6">
             <template v-if="department">
@@ -25,7 +91,9 @@ const emit = defineEmits(["close"]);
                     <h2 class="text-lg font-medium text-gray-900">
                         Daftar Karyawan di Departemen {{ department.name }}
                     </h2>
-                    <PrimaryButton :href="route('dashboard')">
+                    <PrimaryButton
+                        :href="route('employees.create', department.id)"
+                    >
                         Tambah Karyawan
                     </PrimaryButton>
                 </div>
@@ -51,12 +119,22 @@ const emit = defineEmits(["close"]);
                                         {{ employee.email }}
                                     </p>
                                 </div>
-                                <PrimaryButton
-                                    :href="route('welcome')"
-                                    class="bg-blue-600 hover:bg-blue-700"
-                                >
-                                    Edit
-                                </PrimaryButton>
+                                <div class="space-x-2">
+                                    <PrimaryButton
+                                        @click="openEditEmployeeModal(employee)"
+                                        class="bg-yellow-600 hover:bg-yellow-700"
+                                    >
+                                        Mutasikan
+                                    </PrimaryButton>
+                                    <PrimaryButton
+                                        @click="
+                                            deleteEmployeeModal(employee.id)
+                                        "
+                                        class="bg-red-600 hover:bg-red-700"
+                                    >
+                                        Hapus
+                                    </PrimaryButton>
+                                </div>
                             </div>
                         </li>
                     </ul>
