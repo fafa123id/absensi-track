@@ -11,7 +11,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $company = auth()->user()->company->with('departements')->firstOrFail();
+        $company = auth()->user()->company()->with('departements')->firstOrFail();
         $authUserId = auth()->id();
         $departements = Departement::where('company_id', $company->id)
             ->with([
