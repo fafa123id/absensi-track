@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Departement;
+use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -11,6 +12,7 @@ class DepartementController extends Controller
 {
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:departements,name',
         ]);
@@ -28,9 +30,8 @@ class DepartementController extends Controller
     public function edit($id)
     {
         $departement = Departement::findOrFail($id);
-        if ($departement->name === 'Master') {
-            return redirect()->route('dashboard')->with('error', 'Tidak dapat mengedit departemen Master.');
-
+        if(Gate::denies('update', $departement)){
+            return redirect()->back()->with('error', 'Aksi tidak diizinkan');
         }
         return Inertia::render('Departements/Edit', [
             'departement' => $departement
@@ -41,21 +42,22 @@ class DepartementController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
         ]);
 
         $departement = Departement::findOrFail($id);
-        if ($departement->name === 'Master') {
-            return redirect()->back()->with('error', 'Tidak dapat mengedit departemen Master.');
-
+        if(Gate::denies('update', $departement)){
+            return redirect()->back()->with('error', 'Aksi tidak diizinkan');
         }
         $departement->update($validated);
 
-        return redirect()->route('departements.index')->with('success', 'Departemen berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Departemen berhasil diperbarui.');
     }
     public function regenerateToken($id)
     {
         $departement = Departement::findOrFail($id);
+        if(Gate::denies('regenerateToken', $departement)){
+            return redirect()->back()->with('error', 'Aksi tidak diizinkan');
+        }
         $departement->update(
             [
                 'token' => Str::uuid(),
@@ -67,8 +69,8 @@ class DepartementController extends Controller
     public function destroy($id)
     {
         $departement = Departement::findOrFail($id);
-        if ($departement->name === 'Master') {
-            return redirect()->back()->with('error', 'Tidak dapat menghapus departemen Master.');
+        if(Gate::denies('delete', $departement)){
+            return redirect()->back()->with('error', 'Aksi tidak diizinkan');
         }
         $departement->delete();
 
