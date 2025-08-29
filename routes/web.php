@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartementController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
 
 use Illuminate\Foundation\Application;
@@ -23,6 +24,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/departements/{id}/edit', [DepartementController::class, 'edit'])->name('departements.edit');
     Route::put('/departements/{id}', [DepartementController::class, 'update'])->name('departements.update');
     Route::delete('/departements/{id}', [DepartementController::class, 'destroy'])->name('departements.destroy');
+    Route::get('/employees/create/{id}', [EmployeeController::class, 'create'])->name('employees.create');
+    Route::post('/employees/store/{id}', [EmployeeController::class, 'store'])->name('employees.store');
+    Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+    Route::put('/employees/{id}', [EmployeeController::class, 'update'])->name('employees.update');
     Route::patch('/refresh-token/{id}', [DepartementController::class, 'regenerateToken'])->name('departements.refreshToken');
 });
 
