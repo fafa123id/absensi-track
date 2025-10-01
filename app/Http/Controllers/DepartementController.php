@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Departement;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -24,7 +25,7 @@ class DepartementController extends Controller
             'token' => Str::uuid(),
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Departemen ' . $validated['name'] . ' berhasil ditambahkan.');
+        return Redirect::back()->with('success', 'Departemen ' . $validated['name'] . ' berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -50,7 +51,7 @@ class DepartementController extends Controller
         }
         $departement->update($validated);
 
-        return redirect()->back()->with('success', 'Departemen berhasil diperbarui.');
+        return Redirect::back()->with('success', 'Departemen berhasil diperbarui.');
     }
     public function regenerateToken($id)
     {
@@ -64,7 +65,7 @@ class DepartementController extends Controller
             ]
         );
 
-        return redirect()->back()->with('success', 'Token departemen ' . $departement->name . ' berhasil diperbarui.');
+        return Redirect::back()->with('success', 'Token departemen ' . $departement->name . ' berhasil diperbarui.');
     }
     public function destroy($id)
     {
@@ -74,6 +75,6 @@ class DepartementController extends Controller
         }
         $departement->delete();
 
-        return redirect()->back()->with('success', 'Departemen ' . $departement->name . ' berhasil dihapus.');
+        return Redirect::back()->with('success', 'Departemen ' . $departement->name . ' berhasil dihapus.');
     }
 }
