@@ -8,6 +8,7 @@ use App\Models\User;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class EmployeeController extends Controller
@@ -68,7 +69,7 @@ class EmployeeController extends Controller
             'departement_id' => $request->departement_id,
         ]);
         $employee->refresh();
-        return redirect()->route('dashboard')->with('success', 'Karyawan ' . $employee->name . ' berhasil dimutasikan ke departemen ' . $employee->departement->name . '.');
+        return Redirect::back()->with('success', 'Karyawan ' . $employee->name . ' berhasil dimutasikan ke departemen ' . $employee->departement->name . '.');
     }
     public function destroy($id)
     {
@@ -78,6 +79,6 @@ class EmployeeController extends Controller
             return redirect()->back()->with('error', 'Aksi tidak diizinkan');
         }
         $employee->delete();
-        return redirect()->route('dashboard')->with('success', 'Karyawan berhasil dihapus.');
+        return Redirect::back()->with('success', 'Karyawan ' . $employee->name . ' berhasil dihapus.');
     }
 }
