@@ -28,6 +28,7 @@ const form = useForm({
 const EditDepartment = () => {
     form.put(route("departements.update", props.department.id), {
         preserveScroll: true,
+        preserveState: true,
         onSuccess: () => closeAndReset(),
         onError: () => nameEditInput.value.focus(),
     });

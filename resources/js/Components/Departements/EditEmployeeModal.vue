@@ -1,11 +1,11 @@
 <script setup>
-import { ref, watch } from "vue"; // Impor 'watch'
+import { ref, watch, computed } from "vue"; 
 import { useForm } from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue"; // Anda tidak menggunakan ini, bisa dihapus
+import TextInput from "@/Components/TextInput.vue"; 
 import InputError from "@/Components/InputError.vue";
 
 const props = defineProps({
@@ -23,30 +23,28 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close","update-successful"]);
 
 const form = useForm({
-    departement_id: "",
+    departement_id: props.employee ? props.employee.departement_id : "",
 });
 
-watch(
-    () => props.employee,
-    (newEmployee) => {
-        if (newEmployee) {
-            form.departement_id = newEmployee.departement_id;
-        } else {
-            form.reset();
-        }
+const filteredDepartements = computed(() => {
+    if (!props.employee) {
+        return [];
     }
-);
+    return props.departements.filter(department => 
+        department.id !== props.employee.departement_id
+    );
+});
 
 const editEmployee = () => {
-    console.log("Mutating employee to department ID:", form.departement_id);
-    console.log("employee", props.employee.id);
-    console.log('departements', props.departements)
     form.put(route("employees.update", props.employee.id), {
         preserveScroll: true,
-        onSuccess: () => closeAndReset(),
+        onSuccess: () => {
+            closeAndReset();
+            emit("update-successful");
+        },
     });
 };
 
@@ -83,7 +81,7 @@ const closeAndReset = () => {
                             -- Pilih Departemen --
                         </option>
                         <option
-                            v-for="department in props.departements"
+                            v-for="department in filteredDepartements"
                             :key="department.id"
                             :value="department.id"
                         >
