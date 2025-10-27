@@ -2,7 +2,7 @@
 networks:
   shared-network:
     external: true
-    
+
 volumes:
   app_storage:
     name: ${COMPOSE_PROJECT_NAME:-absensi-track}_app_storage
@@ -73,7 +73,7 @@ services:
       args:
         - GIT_HASH=${GIT_HASH:-unknown}
     container_name: ${COMPOSE_PROJECT_NAME:-absensi-track}_queue
-    restart: unless-stoppedr
+    restart: unless-stopped
     command: /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
     env_file: .env
     working_dir: /var/www/absensi-track
