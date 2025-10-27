@@ -36,29 +36,8 @@ services:
     networks:
       - shared-network 
     depends_on:
-      app:
-        condition: service_started
-      reverb: 
-        condition: service_started
-
-  reverb:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: app
-      args:
-        - GIT_HASH=${GIT_HASH:-unknown}
-    container_name: absensi_track_reverb
-    restart: unless-stopped
-    env_file: .env
-    working_dir: /var/www/absensi-track
-    command: php artisan reverb:start --host=0.0.0.0 --port=8080
-    volumes:
-      - app_storage:/var/www/absensi-track/storage
-    networks:
-      - shared-network 
-    depends_on:
       - app
+      - worker
 
   worker: 
     build:
