@@ -4,14 +4,15 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    zip \
-    unzip \
+    libpq-dev \
+    zip unzip \
     netcat-openbsd \
-    git \
-    curl \
-    libonig-dev \
+    git curl \
     libxml2-dev \
-    && docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd
+    supervisor \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+    mbstring exif pcntl bcmath gd pdo_mysql pdo_pgsql pgsql
 
 COPY --from=composer:2.8.10 /usr/bin/composer /usr/bin/composer
 
@@ -48,7 +49,7 @@ RUN php artisan route:clear || true
 RUN php artisan config:clear || true
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
- && chmod -R 775 storage bootstrap/cache
+    && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 9000
 CMD ["php-fpm"]
