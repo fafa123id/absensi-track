@@ -1,20 +1,6 @@
 pipeline {
   agent any
 
-  options {
-    skipDefaultCheckout(true)       // biar kita kontrol checkout sendiri
-    timestamps()
-    ansiColor('xterm')
-    disableConcurrentBuilds()
-    timeout(time: 30, unit: 'MINUTES')
-  }
-
-  environment {
-    DOCKER_BUILDKIT = '1'
-    COMPOSE_DOCKER_CLI_BUILD = '1'
-    COMPOSE_PROJECT_NAME = 'absensi-track'
-  }
-
   stages {
     stage('Checkout (scm)') {
       steps {
@@ -33,10 +19,7 @@ pipeline {
     stage('Create .env from Credentials') {
       steps {
         withCredentials([file(credentialsId: 'absensi-track-env-prod', variable: 'DOTENV_FILE')]) {
-          sh '''
-            install -m 600 "$DOTENV_FILE" .env
-            echo "Loaded .env"
-          '''
+            sh "cp \$DOTENV_FILE .env"
         }
       }
     }
