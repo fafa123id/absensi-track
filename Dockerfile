@@ -66,12 +66,7 @@ COPY --from=node_builder /var/www/absensi-track/public/build /var/www/absensi-tr
 COPY . .
 
 # Generate autoload & optimize
-RUN composer dump-autoload --optimize --classmap-authoritative --no-dev \
- && php artisan optimize:clear \
- && php artisan config:cache \
- && php artisan route:cache \
- && php artisan view:cache \
- && php artisan storage:link
+RUN composer dump-autoload --optimize --classmap-authoritative --no-dev 
 
 # Copy entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
