@@ -7,11 +7,11 @@ volumes:
   laravel_cache:
 
 services:
-  app:
+  app-absensi:
     build:
       context: .
       dockerfile: Dockerfile
-      target: app 
+      target: app-absensi
       args:
         - GIT_HASH=${GIT_HASH:-unknown}
     container_name: absensi_track_app
@@ -38,14 +38,14 @@ services:
     networks:
       - shared-network 
     depends_on:
-      - app   
+      - app-absensi  
       - worker
 
   worker: 
     build:
       context: .
       dockerfile: Dockerfile
-      target: app
+      target: app-absensi
       args:
         - GIT_HASH=${GIT_HASH:-unknown}
     container_name: absensi_track_queue
@@ -59,4 +59,4 @@ services:
     networks:
       - shared-network 
     depends_on:
-      - app
+      - app-absensi
