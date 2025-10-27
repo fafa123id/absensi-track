@@ -34,7 +34,7 @@ pipeline {
           docker compose pull || true
 
           echo '--- build ---'
-          docker compose build
+          docker compose build --no-cache
 
           echo '--- up -d ---'
           docker compose up -d

@@ -90,8 +90,3 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 
 EXPOSE 9000
 CMD ["php-fpm"]
-
-
-FROM nginx:alpine AS web
-
-COPY --from=app /var/www/absensi_track/public /var/www/absensi_track/public
