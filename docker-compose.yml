@@ -17,10 +17,10 @@ services:
         - GIT_HASH=${GIT_HASH:-unknown}
     container_name: absensi_track_app
     restart: unless-stopped
-    working_dir: /var/www/absensi-track
+    working_dir: /var/www/absensi_track
     env_file: .env
     volumes:
-      - app_storage:/var/www/absensi-track/storage
+      - app_storage:/var/www/absensi_track/storage
     networks:
       - shared-network
   nginx:
@@ -32,7 +32,7 @@ services:
       - LETSENCRYPT_HOST=absensi-track.bornhub.cloud
       - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     volumes:
-      - .:/var/www/absensi-track
+      - .:/var/www/absensi_track
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - shared-network 
@@ -51,9 +51,9 @@ services:
     restart: unless-stopped
     command: /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
     env_file: .env
-    working_dir: /var/www/absensi-track
+    working_dir: /var/www/absensi_track
     volumes:
-      - app_storage:/var/www/absensi-track/storage
+      - app_storage:/var/www/absensi_track/storage
     networks:
       - shared-network 
     depends_on:
