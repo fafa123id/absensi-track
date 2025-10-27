@@ -56,6 +56,11 @@ services:
     volumes:
       - app_storage:/var/www/absensi_track/storage
       - laravel_cache:/var/www/absensi_track/bootstrap/cache
+    environment:
+      - VIRTUAL_HOST=reverb.absensi-track.bornhub.cloud
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST=reverb.absensi-track.bornhub.cloud
+      - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     networks:
       - shared-network 
     depends_on:
