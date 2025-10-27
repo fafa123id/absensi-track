@@ -24,7 +24,7 @@ services:
     networks:
       - shared-network
 
-  nginx:
+  nginx-absensi:
     build:
       context: .
       dockerfile: Dockerfile
@@ -39,9 +39,9 @@ services:
       - shared-network 
     depends_on:
       - app-absensi  
-      - worker
+      - worker-absensi
 
-  worker: 
+  worker-absensi: 
     build:
       context: .
       dockerfile: Dockerfile
