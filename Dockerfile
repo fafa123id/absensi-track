@@ -52,10 +52,6 @@ RUN apk add --no-cache \
 COPY --from=composer_builder /app /var/www/absensi-track
 COPY --from=frontend_builder /app/public/build /var/www/absensi-track/public/build
 
-# entrypoint
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
 # permission minimal
 RUN chown -R www-data:www-data storage bootstrap/cache
 
