@@ -67,6 +67,7 @@ RUN npm run build
 # =========================
 FROM php_base AS app
 WORKDIR /var/www/absensi_track
+RUN ln -s /var/www/absensi_track /var/www/absensi-track
 
 ARG GIT_HASH=unknown
 RUN echo "${GIT_HASH}" > .version
