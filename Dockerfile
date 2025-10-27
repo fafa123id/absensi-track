@@ -4,15 +4,19 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    libpq-dev \
+    libpq-dev \        
+    libonig-dev \          
+    pkg-config \          
     zip unzip \
     netcat-openbsd \
     git curl \
     libxml2-dev \
     supervisor \
+    RUN pecl install redis \
+    && docker-php-ext-enable redis \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-    mbstring exif pcntl bcmath gd pdo_mysql pdo_pgsql pgsql
+    && docker-php-ext-install -j"$(nproc)" mbstring exif pcntl bcmath gd pdo_mysql pdo_pgsql pgsql \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2.8.10 /usr/bin/composer /usr/bin/composer
 
