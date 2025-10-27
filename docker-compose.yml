@@ -52,6 +52,8 @@ services:
 
   reverb:
     container_name: reverb
+    build:
+      context: .
     restart: unless-stopped
     env_file: .env
     environment:
@@ -91,6 +93,8 @@ services:
       - shared-network
 
   worker:
+    build:
+      context: .
     container_name: worker
     restart: unless-stopped
     env_file: .env
