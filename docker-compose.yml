@@ -33,7 +33,7 @@ services:
       - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - app_storage:/var/www/absensi_track:ro
+      - app_storage:/var/www/absensi_track
     networks:
       - shared-network 
     depends_on:
