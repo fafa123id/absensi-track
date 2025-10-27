@@ -40,6 +40,7 @@ const filteredDepartements = computed(() => {
 
 const editEmployee = () => {
     form.put(route("employees.update", props.employee.id), {
+        preserveState: true,
         preserveScroll: true,
         onSuccess: () => {
             closeAndReset();
@@ -55,7 +56,7 @@ const closeAndReset = () => {
 </script>
 
 <template>
-    <Modal :show="props.show" @close="closeAndReset">
+    <Modal id="editEmp" :show="props.show" @close="closeAndReset">
         <div class="p-6">
             <form @submit.prevent="editEmployee">
                 <h2 class="text-lg font-medium text-gray-900">

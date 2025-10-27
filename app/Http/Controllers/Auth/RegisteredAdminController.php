@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+
 class RegisteredAdminController extends Controller
 {
     /**
@@ -53,7 +54,10 @@ class RegisteredAdminController extends Controller
             'role_id' => 0,
             'departement_id' => $departemen->id,
         ]);
-
+        $user->uniqueIdentityQr()->create([
+            'public_id' => Str::uuid(),
+            'unique_code' => Str::uuid(),
+        ]);
         event(new Registered($user));
 
         Auth::login($user);

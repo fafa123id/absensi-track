@@ -1,6 +1,15 @@
 <script setup>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Link } from '@inertiajs/vue3';
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+import { Link, router } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
+import { onMounted, onUnmounted, watch } from "vue";
+const page = usePage();
+import { confirmAction, showSuccess, showError } from "@/Composables/swal";
+import { setupAuthCheck } from "@/Composables/useAuthCheck";
+import { setupSwalFlashMessages } from "@/Composables/useSwal";
+
+setupSwalFlashMessages();
+setupAuthCheck();
 </script>
 
 <template>

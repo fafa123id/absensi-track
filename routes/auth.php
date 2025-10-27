@@ -11,10 +11,12 @@ use App\Http\Controllers\Auth\RegisteredAdminController;
 use App\Http\Controllers\Auth\RegisteredEmployeeController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\QrLoginController;
+use App\Http\Controllers\QrScannerController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::middleware('guest')->group(function () {
+Route::middleware(['guest','no-cache'])->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
     Route::get('register/admin', function () {
@@ -42,9 +44,16 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+    Route::get('/login/qr-code/generate', function(){
+        return Inertia::render('Auth/LoginWithQr');
+    })->name('qr.generate');
+    Route::get('/login/qr-code/{id}/status', [QrLoginController::class, 'status'])->name('qr.status');
+
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth','no-cache'])->group(function () {
+    Route::post('/login/qr-code/scan', [QrLoginController::class, 'scan'])->name('qr.scan');
+    Route::get('/login/scan-qr', QrScannerController::class)->name('qr.scanner');
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 

@@ -1,34 +1,15 @@
 <script setup>
 import NavbarLayout from "@/Layouts/NavbarLayout.vue";
-import { usePage } from "@inertiajs/vue3";
-import { watch } from "vue";
-const page = usePage();
-import { confirmAction, showSuccess, showError } from "@/Composables/swal";
+import { setupAuthCheck } from "@/Composables/useAuthCheck";
+import { setupSwalFlashMessages } from "@/Composables/useSwal";
+import { setupPrivateAuthWebsocket } from "@/Composables/useWebsocket";
+import { setupLoginNotification } from "@/Composables/useLoginNotification";
 
-watch(
-    () => page.props.flash.success,
-    (newMessage) => {
-        if (newMessage) {
-            showSuccess("Berhasil!", newMessage);
-            page.props.flash.success = null;
-        }
-    },
-    {
-        immediate: true,
-    }
-);
-watch(
-    () => page.props.flash.error,
-    (newMessage) => {
-        if (newMessage) {
-            showError("Gagal!", newMessage);
-            page.props.flash.error = null;
-        }
-    },
-    {
-        immediate: true,
-    }
-);
+
+setupPrivateAuthWebsocket();
+setupAuthCheck();
+setupSwalFlashMessages();
+setupLoginNotification();
 </script>
 
 <template>

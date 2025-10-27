@@ -39,7 +39,7 @@ const closeAndReset = () => {
 </script>
 
 <template>
-    <Modal :show="props.show" @close="closeAndReset">
+    <Modal id="addDepart" :show="props.show" @close="closeAndReset">
         <div class="p-6">
             <h2 class="text-lg font-medium text-gray-900">
                 Masukkan Departemen Baru!

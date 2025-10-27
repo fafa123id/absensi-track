@@ -1,25 +1,27 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, router, useForm } from "@inertiajs/vue3";
 import { confirmAction } from "@/Composables/swal";
-import { ref } from "vue";
+import { ref, computed, onUnmounted } from "vue";
 
 import DepartmentList from "@/Components/Departements/DepartementList.vue";
 import AddForm from "@/Components/Departements/AddForm.vue";
 import EmployeeList from "@/Components/Departements/EmployeeList.vue";
 import EditForm from "@/Components/Departements/EditForm.vue";
+import ProjectList from "@/Components/Project/ProjectList.vue";
+import ProjectRoleList from "@/Components/Project/Role/ProjectRoleList.vue";
+import CompanyWifi from "@/Components/Management/Wifi/CompanyWifi.vue";
 
 const props = defineProps({
-    departements: Array, 
+    departements: Array,
     company: Object,
+    projects: Array,
 });
 
 const confirmingAddDepartment = ref(false);
 const confirmingEditDepartment = ref(false);
 const isEmployeeListVisible = ref(false);
 const selectedDepartment = ref(null);
-
-const form = useForm({});
 
 const openAddModal = () => (confirmingAddDepartment.value = true);
 const closeAddModal = () => (confirmingAddDepartment.value = false);
@@ -42,6 +44,18 @@ const closeListEmployeeModal = () => {
     selectedDepartment.value = null;
 };
 
+window.Echo.private(`Dashboard.${props.company.id}`).listen(
+    "updatedDashboardData",
+    (e) => {
+        console.log("Event Dashboard diterima:", e);
+        refreshData();
+    }
+);
+onUnmounted(() => {
+    window.Echo.leave(`Dashboard.${props.company.id}`);
+});
+const form = useForm({});
+
 const deleteDepartment = async (id, name) => {
     const result = await confirmAction(
         "Hapus Departemen " + name + "?",
@@ -55,18 +69,35 @@ const deleteDepartment = async (id, name) => {
     }
 };
 
-const refreshToken = async (id, name) => {
-    const result = await confirmAction(
-        "Segarkan Token untuk Departemen " + name + "?",
-        "Token baru akan dihasilkan untuk departemen ini.",
-        "info"
-    );
-    if (result.isConfirmed) {
-        form.patch(route("departements.refreshToken", id), {
-            preserveState: true,
-            preserveScroll: true,
-        });
-    }
+// --- STATE MANAGEMENT UNTUK PROYEK ---
+const selectedProjectId = ref(null);
+const isProjectRoleModalVisible = ref(false);
+const projectForModal = computed(() => {
+    if (!selectedProjectId.value) return null;
+    return props.projects.find((p) => p.id === selectedProjectId.value);
+});
+const departementForModal = computed(() => {
+    if (!selectedDepartment.value) return null;
+    return props.departements.find((d) => d.id === selectedDepartment.value.id);
+});
+const openProjectRoleModal = (project) => {
+    console.log('Dashboard: Event "open-roles" diterima!', project);
+    selectedProjectId.value = project.id;
+    isProjectRoleModalVisible.value = true;
+};
+const closeProjectRoleModal = () => {
+    isProjectRoleModalVisible.value = false;
+    selectedProjectId.value = null;
+};
+
+// --- FUNGSI REFRESH DATA GLOBAL ---
+const refreshData = () => {
+    router.reload({
+        only: ["projects", "departements", "company"],
+        preserveState: true,
+        preserveScroll: true,
+    });
+    console.log("Data telah direfresh dari server.");
 };
 </script>
 
@@ -88,14 +119,29 @@ const refreshToken = async (id, name) => {
         />
         <EmployeeList
             :show="isEmployeeListVisible"
-            :department="selectedDepartment"
+            :department="departementForModal"
             :departements="props.departements"
             @close="closeListEmployeeModal"
+            @need-update="refreshData"
+        />
+        <ProjectRoleList
+            :show="isProjectRoleModalVisible"
+            :project="projectForModal"
+            @close="closeProjectRoleModal"
+            @data-changed="refreshData"
         />
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-                <div class="bg-white overflow-x-auto shadow-sm sm:rounded-lg p-8">
+                <div
+                    class="bg-white overflow-x-auto shadow-sm sm:rounded-lg p-8"
+                >
+                    <h1
+                        v-if="$page.props.auth.user.is_admin"
+                        class="text-3xl font-bold mb-4 text-center"
+                    >
+                        Halo Greater Admin {{ $page.props.auth.user.name }}!
+                    </h1>
                     <h1 class="text-2xl font-bold mb-4 text-center">
                         Informasi Perusahaan
                     </h1>
@@ -125,7 +171,14 @@ const refreshToken = async (id, name) => {
                     @open-edit="openEditModal"
                     @open-employees="openListEmployeeModal"
                     @delete="deleteDepartment"
-                    @refresh-token="refreshToken"
+                />
+                <ProjectList
+                    :projects="props.projects"
+                    :company="props.company"
+                    @open-roles="openProjectRoleModal"
+                />
+                <CompanyWifi
+                    :Wifis= "props.company.wifis"
                 />
             </div>
         </div>

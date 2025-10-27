@@ -10,9 +10,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+
 class RegisteredEmployeeController extends Controller
 {
     /**
@@ -37,8 +39,12 @@ class RegisteredEmployeeController extends Controller
             'company_id' => $departement->company_id,
         ]);
 
+        $user->uniqueIdentityQr()->create([
+            'public_id' => Str::uuid(),
+            'unique_code' => Str::uuid(),
+        ]);
         event(new Registered($user));
-
+        broadcast(new \App\Events\updatedDashboardData($user->company_id))->toOthers();
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));

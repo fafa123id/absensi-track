@@ -28,7 +28,6 @@ const form = useForm({
 const EditDepartment = () => {
     form.put(route("departements.update", props.department.id), {
         preserveScroll: true,
-        preserveState: true,
         onSuccess: () => closeAndReset(),
         onError: () => nameEditInput.value.focus(),
     });
@@ -48,7 +47,7 @@ const closeAndReset = () => {
 </script>
 
 <template>
-    <Modal :show="props.show" @close="closeAndReset">
+    <Modal id="DepartementEdit" :show="props.show" @close="closeAndReset">
         <div class="p-6">
             <h2 class="text-lg font-medium text-gray-900">
                 Edit Departemen!

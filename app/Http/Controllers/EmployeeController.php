@@ -17,9 +17,11 @@ class EmployeeController extends Controller
     {
         $department = Departement::findOrFail($id);
         $company = $department->company;
+        Gate::authorize("create", $company);
         if (Gate::denies('create', [$company, $department])) {
             return redirect()->back()->with('error', 'Aksi tidak diizinkan');
         }
+        broadcast(new \App\Events\updatedDashboardData($department->company_id))->toOthers();
         return Inertia::render('Employee/AddForm', [
             'department' => $department
         ]);
@@ -28,7 +30,7 @@ class EmployeeController extends Controller
     {
         $department = Departement::findOrFail($id)->load('users');
         $company = $department->company;
-
+        Gate::authorize("create", $company);
         if (Gate::denies('create', [$company, $department])) {
             return redirect()->back()->with('error', 'Aksi tidak diizinkan');
         }
@@ -47,11 +49,7 @@ class EmployeeController extends Controller
             'role_id' => 2,
             'company_id' => $department->company_id,
         ]);
-
-        if ($department->name === 'Master') {
-            $user->update(['role_id' => 0]);
-        }
-
+        broadcast(new \App\Events\updatedDashboardData($department->company_id))->toOthers();
         return redirect()->route('dashboard')->with('success', 'Karyawan ditambahkan ke departemen ' . $department->name . '.');
     }
     public function update(Request $request, $id)
@@ -59,9 +57,7 @@ class EmployeeController extends Controller
         $employee = User::findOrFail($id)->load('departement');
 
         $company = $employee->company;
-        if (Gate::denies('update', [$company, $employee->departement])) {
-            return redirect()->back()->with('error', 'Aksi tidak diizinkan');
-        }
+        Gate::authorize("update", $company);
         $request->validate([
             'departement_id' => 'required|exists:departements,id',
         ]);
@@ -69,16 +65,16 @@ class EmployeeController extends Controller
             'departement_id' => $request->departement_id,
         ]);
         $employee->refresh();
+        broadcast(new \App\Events\updatedDashboardData($company->id))->toOthers();
         return Redirect::back()->with('success', 'Karyawan ' . $employee->name . ' berhasil dimutasikan ke departemen ' . $employee->departement->name . '.');
     }
     public function destroy($id)
     {
         $employee = User::findOrFail($id);
         $company = $employee->company;
-        if (Gate::denies('delete', [$company, $employee->departement])) {
-            return redirect()->back()->with('error', 'Aksi tidak diizinkan');
-        }
+        Gate::authorize("delete", $company);
         $employee->delete();
+        broadcast(new \App\Events\updatedDashboardData($company->id))->toOthers();
         return Redirect::back()->with('success', 'Karyawan ' . $employee->name . ' berhasil dihapus.');
     }
 }

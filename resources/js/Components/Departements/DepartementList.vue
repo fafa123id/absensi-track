@@ -4,7 +4,8 @@ import TextInput from "@/Components/TextInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import Pagination from "@/Components/Pagination.vue";
-import { showSuccess } from "@/Composables/swal";
+import { showSuccess, confirmAction } from "@/Composables/swal";
+import { useForm } from "@inertiajs/vue3";
 
 const props = defineProps({
     departments: Array,
@@ -51,7 +52,19 @@ const toggleVisibility = (departmentId) => {
     visibleTokenId.value =
         visibleTokenId.value === departmentId ? null : departmentId;
 };
-
+const form = useForm({});
+const refreshToken = async (id, name) => {
+    const result = await confirmAction(
+        "Segarkan Token untuk Departemen " + name + "?",
+        "Token baru akan dihasilkan untuk departemen ini.",
+        "info"
+    );
+    if (result.isConfirmed) {
+        form.patch(route("departements.refreshToken", id), {
+            preserveScroll: true,
+        });
+    }
+};
 const copyToken = async (token, departmentId) => {
     try {
         await navigator.clipboard.writeText(token);
@@ -214,10 +227,6 @@ const copyToken = async (token, departmentId) => {
                             @click="$emit('open-employees', department)"
                             >Karyawan</PrimaryButton
                         >
-                        <PrimaryButton
-                            @click="$emit('open-employees', department)"
-                            >Jobdesk</PrimaryButton
-                        >
                     </td>
                     <td class="flex flex-row px-6 py-4 gap-2">
                         <PrimaryButton
@@ -233,13 +242,7 @@ const copyToken = async (token, departmentId) => {
                             >Hapus</PrimaryButton
                         >
                         <PrimaryButton
-                            @click="
-                                $emit(
-                                    'refresh-token',
-                                    department.id,
-                                    department.name
-                                )
-                            "
+                            @click="refreshToken(department.id, department.name)"
                             class="bg-green-600 hover:bg-green-700"
                             >Refresh</PrimaryButton
                         >

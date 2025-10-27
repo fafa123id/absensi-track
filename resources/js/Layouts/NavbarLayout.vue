@@ -8,6 +8,7 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { Link } from "@inertiajs/vue3";
 import Button from "@/Components/Button.vue";
 const showingNavigationDropdown = ref(false);
+import { hasMediaDevices } from "@/Composables/useCamera";
 </script>
 
 <template>
@@ -42,13 +43,15 @@ const showingNavigationDropdown = ref(false);
                     class="hidden sm:ms-6 sm:flex sm:items-center"
                 >
                     <!-- Settings Dropdown -->
-                    <div class="relative ms-3" >
-                        <Dropdown  align="right" width="48">
+                    <div class="relative ms-3">
+                        <Dropdown align="right" width="48">
                             <template #trigger>
                                 <span class="inline-flex rounded-md">
                                     <Button
                                         type="button"
-                                        :active="route().current('profile.edit')"
+                                        :active="
+                                            route().current('profile.edit')
+                                        "
                                     >
                                         {{ $page.props.auth.user?.name }}
 
@@ -64,13 +67,24 @@ const showingNavigationDropdown = ref(false);
                                                 clip-rule="evenodd"
                                             />
                                         </svg>
-                                    </button>
+                                    </Button>
                                 </span>
                             </template>
 
                             <template v-if="$page.props.auth.user" #content>
                                 <DropdownLink :href="route('profile.edit')">
                                     Profile
+                                </DropdownLink>
+                                <DropdownLink
+                                    v-if="
+                                        hasMediaDevices
+                                    "
+                                    :active="route().current('qr.scanner')"
+                                    :href="route('qr.scanner')"
+                                    method="get"
+                                    as="button"
+                                >
+                                    Login Other Devices With QR
                                 </DropdownLink>
                                 <DropdownLink
                                     :href="route('logout')"
@@ -83,6 +97,17 @@ const showingNavigationDropdown = ref(false);
                             <template #content>
                                 <DropdownLink :href="route('profile.edit')">
                                     Profile
+                                </DropdownLink>
+                                <DropdownLink
+                                    v-if="
+                                        hasMediaDevices
+                                    "
+                                    :active="route().current('qr.scanner')"
+                                    :href="route('qr.scanner')"
+                                    method="get"
+                                    as="button"
+                                >
+                                    Login Other Devices With QR
                                 </DropdownLink>
                                 <DropdownLink
                                     :href="route('logout')"
@@ -160,7 +185,10 @@ const showingNavigationDropdown = ref(false);
             }"
             class="sm:hidden"
         >
-            <div v-if="$page.props.auth.user?.is_admin" class="space-y-1 pb-3 pt-2">
+            <div
+                v-if="$page.props.auth.user?.is_admin"
+                class="space-y-1 pb-3 pt-2"
+            >
                 <ResponsiveNavLink
                     :href="route('dashboard')"
                     :active="route().current('dashboard')"
@@ -199,8 +227,22 @@ const showingNavigationDropdown = ref(false);
                 </div>
 
                 <div class="mt-3 space-y-1">
-                    <ResponsiveNavLink :href="route('profile.edit')" :active="route().current('profile.edit')">
+                    <ResponsiveNavLink
+                        :href="route('profile.edit')"
+                        :active="route().current('profile.edit')"
+                    >
                         Profile
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink
+                        v-if="
+                            hasMediaDevices
+                        "
+                        :active="route().current('qr.scanner')"
+                        :href="route('qr.scanner')"
+                        method="get"
+                        as="button"
+                    >
+                        Login Other Devices With QR
                     </ResponsiveNavLink>
                     <ResponsiveNavLink
                         :href="route('logout')"

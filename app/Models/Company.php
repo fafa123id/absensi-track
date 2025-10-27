@@ -26,4 +26,11 @@ class Company extends Model
     {
         return $this->hasMany(User::class);
     }
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+    public function wifis(){
+        return $this->hasMany(WifiCompany::class);
+    }
 }

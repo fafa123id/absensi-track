@@ -4,7 +4,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { useForm } from "@inertiajs/vue3";
 import { confirmAction } from "@/Composables/swal";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import EditEmployeeModal from "@/Components/Departements/EditEmployeeModal.vue";
 import TextInput from "@/Components/TextInput.vue";
 
@@ -42,14 +42,25 @@ const closeEditEmployeeModal = () => {
     editEmployee.value = false;
     searchQuery.value = "";
 };
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "need-update"]);
+watch(() => props.show, (isVisible) => {
+    if (isVisible) {
 
+        refreshEmployeeData();
+        searchQuery.value = ""; //
+    }
+});
+
+const refreshEmployeeData = () => {
+    emit("need-update");
+};
 const deleteEmployee = (employeeId) => {
     form.delete(route("employees.destroy", employeeId), {
+        preserveState: true,
         preserveScroll: true,
         onFinish: () => {
             ConfirmDelete.value = false;
-            closeModal();
+            emit("need-update");
         },
         onError: () => {
             ConfirmDelete.value = false;
@@ -92,9 +103,13 @@ const closeDeleteEmployeeModal = () => {
         :employee="selectedEmployee"
         :departements="props.departements"
         @close="closeEditEmployeeModal"
-        @update-successful="closeModal"
+        @update-successful="emit('need-update')"
     />
-    <Modal :show="ConfirmDelete" @close="closeDeleteEmployeeModal">
+    <Modal
+        id="confirmDeleteEmp"
+        :show="ConfirmDelete"
+        @close="closeDeleteEmployeeModal"
+    >
         <div class="p-6">
             <h2 class="text-lg font-medium text-gray-900">Hapus Karyawan</h2>
             <p class="mt-2 text-sm text-gray-600">
@@ -114,9 +129,9 @@ const closeDeleteEmployeeModal = () => {
             </div>
         </div>
     </Modal>
-    <Modal :show="props.show" @close="closeModal">
+    <Modal id="EmpList" :show="props.show" @close="closeModal">
         <div class="p-6">
-            <template v-if="department">
+            <div v-if="department">
                 <div class="flex flex-row items-center justify-between">
                     <h2 class="text-lg font-medium text-gray-900">
                         Daftar Karyawan di Departemen {{ department.name }}
@@ -180,12 +195,12 @@ const closeDeleteEmployeeModal = () => {
                         Tidak ada karyawan di departemen ini.
                     </p>
                 </div>
-            </template>
 
-            <div class="mt-6 flex justify-end">
-                <SecondaryButton @click="closeModal">
-                    Tutup
-                </SecondaryButton>
+                <div class="mt-6 flex justify-end">
+                    <SecondaryButton @click="closeModal">
+                        Tutup
+                    </SecondaryButton>
+                </div>
             </div>
         </div>
     </Modal>

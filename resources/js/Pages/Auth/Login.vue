@@ -5,7 +5,7 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, Link, router, useForm } from "@inertiajs/vue3";
 import NavbarLayout from "@/Layouts/NavbarLayout.vue";
 
 defineProps({
@@ -25,7 +25,10 @@ const form = useForm({
 
 const submit = () => {
     form.post(route("login"), {
-        onFinish: () => form.reset("password"),
+        onFinish: () => {
+            form.reset("password");
+            router.reload();
+        }
     });
 };
 </script>
@@ -83,7 +86,12 @@ const submit = () => {
                         >
                     </label>
                 </div>
-
+                <PrimaryButton
+                    :href="route('qr.generate')"
+                    class="mt-4 bg-blue-600"
+                >
+                    Login with QR CODE
+                </PrimaryButton>
                 <div class="mt-4 flex items-center justify-end">
                     <Link
                         v-if="canResetPassword"

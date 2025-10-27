@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Jenssegers\Agent\Agent;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -29,15 +30,25 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $agent = new Agent();
         return [
             ...parent::share($request),
+            'device' => [
+                'isMobile' => $agent->isPhone(),
+                'isTablet' => $agent->isTablet(),
+                'isDesktop' => $agent->isDesktop(),
+            ],
             'flash' => [
                 'success' => fn() => $request->session()->get('success'),
                 'error' => fn() => $request->session()->get('error'),
             ],
             'auth' => [
-                'user' => $request->user(),
+                'user' => fn() => $request->user()
+                    ? $request->user()
+                    : null,
             ],
+            'currentSessionId' => $request->user() ? $request->session()->getId() : null,
+
         ];
     }
 }

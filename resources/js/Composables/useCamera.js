@@ -1,0 +1,1 @@
+export const hasMediaDevices = !!navigator.mediaDevices?.getUserMedia
