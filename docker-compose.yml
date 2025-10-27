@@ -2,9 +2,7 @@
 networks:
   shared-network:
     external: true
-  appnet:
-    driver: bridge
-
+    
 volumes:
   app_storage:
     name: ${COMPOSE_PROJECT_NAME:-absensi-track}_app_storage
@@ -24,7 +22,7 @@ services:
     volumes:
       - app_storage:/var/www/absensi-track/storage
     networks:
-      - appnet
+      - shared-network
   #--- Service Nginx (Web Server & Reverse Proxy buat Laravel & Reverb) ---
   nginx: # Ganti 'web' jadi 'nginx' biar jelas
     image: nginx:alpine
@@ -41,7 +39,6 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
-      - appnet 
       - shared-network 
     depends_on:
       app:
@@ -64,7 +61,7 @@ services:
     volumes:
       - app_storage:/var/www/absensi-track/storage
     networks:
-      - appnet
+      - shared-network 
     depends_on:
       - app
 
@@ -83,7 +80,7 @@ services:
     volumes:
       - app_storage:/var/www/absensi-track/storage
     networks:
-      - appnet
+      - shared-network 
     depends_on:
       - app
 
