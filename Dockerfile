@@ -1,65 +1,84 @@
-# ========================
-# 1) COMPOSER BUILDER
-# ========================
-FROM composer:2 AS composer_builder
-WORKDIR /app
-
-# pasang vendor tanpa scripts (artisan belum ada)
-COPY composer.json composer.lock ./
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --no-scripts
-
-# setelah vendor, baru copy source
-COPY . .
-RUN composer dump-autoload -o --classmap-authoritative
-
 
 # ========================
-# 2) FRONTEND BUILDER
+# 1) PHP BASE + BUILD DEPS
 # ========================
-FROM node:20-alpine AS frontend_builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-# supaya import ziggy via vendor tidak error saat build
-COPY --from=composer_builder /app/vendor ./vendor
-RUN npm run build
+FROM php:8.3-fpm-alpine AS php_base
+WORKDIR /var/www/absensi-track # <-- Konsisten pake path ini
 
-
-# ========================
-# 3) RUNTIME (PHP-FPM)
-# ========================
-FROM php:8.3-fpm-alpine AS runtime
-WORKDIR /var/www/absensi-track
-
-# ---- RUNTIME libs (dipertahankan) + BUILD deps (dihapus setelah compile)
 RUN apk add --no-cache \
-    # runtime
     bash curl git icu-libs oniguruma libzip zlib libpng libjpeg-turbo freetype libpq \
-    # build dev
+    supervisor su-exec \
     icu-dev oniguruma-dev libzip-dev zlib-dev \
     libpng-dev libjpeg-turbo-dev freetype-dev libpq-dev \
     $PHPIZE_DEPS \
+ && pecl install redis \
+ && docker-php-ext-enable redis \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install -j"$(nproc)" pdo pdo_pgsql gd intl zip opcache \
- # hapus HANYA paket dev; runtime libs tetap ada → FIX GD
- && apk del icu-dev oniguruma-dev libzip-dev zlib-dev \
-           libpng-dev libjpeg-turbo-dev freetype-dev libpq-dev \
-           $PHPIZE_DEPS
+ && docker-php-ext-install -j"$(nproc)" pdo pdo_pgsql gd intl zip opcache bcmath exif pcntl mbstring \
+ && apk del --purge icu-dev oniguruma-dev libzip-dev zlib-dev \
+             libpng-dev libjpeg-turbo-dev freetype-dev libpq-dev \
+             $PHPIZE_DEPS
 
-# copy app + build assets dari stages
-COPY --from=composer_builder /app /var/www/absensi-track
-COPY --from=frontend_builder /app/public/build /var/www/absensi-track/public/build
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# permission minimal
-RUN chown -R www-data:www-data storage bootstrap/cache
 
-COPY entrypoint.sh /usr/local/bin/
+COPY supervisord.conf /etc/supervisor/supervisord.conf
+
+# ========================
+# 2) COMPOSER DEPENDENCIES
+# ========================
+FROM php_base AS composer_deps
+WORKDIR /var/www/absensi-track
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --prefer-dist --no-interaction --no-autoloader --no-scripts
+
+# ========================
+# 3) NODE BUILDER
+# ========================
+FROM node:20-alpine AS node_builder
+WORKDIR /var/www/absensi-track
+COPY package*.json ./
+RUN npm ci
+COPY tailwind.config.js postcss.config.js vite.config.js ./
+COPY resources ./resources
+COPY public ./public
+# Copy vendor dari composer biar Ziggy gak error (kalo pake)
+COPY --from=composer_deps /var/www/absensi-track/vendor ./vendor
+# Copy sisa kode
+COPY . .
+# Pastikan VITE_* vars dari .env bisa dibaca pas build kalo perlu
+RUN npm run build
+
+# ========================
+# 4) FINAL APP IMAGE (RUNTIME)
+# ========================
+FROM php_base AS app
+WORKDIR /var/www/absensi-track
+
+ARG GIT_HASH=unknown
+RUN echo ${GIT_HASH} > .version
+
+# Copy vendor & aset dari stage sebelumnya
+COPY --from=composer_deps /var/www/absensi-track/vendor /var/www/absensi-track/vendor
+COPY --from=node_builder /var/www/absensi-track/public/build /var/www/absensi-track/public/build
+# Copy sisa kode aplikasi
+COPY . .
+
+# Generate autoload & optimize
+RUN composer dump-autoload --optimize --classmap-authoritative --no-dev \
+ && php artisan optimize:clear \
+ && php artisan config:cache \
+ && php artisan route:cache \
+ && php artisan view:cache \
+ && php artisan storage:link
+
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"] 
 
-USER www-data
-
+# Perintah default buat service 'app'
+EXPOSE 9000
 CMD ["php-fpm"]
