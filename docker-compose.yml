@@ -15,7 +15,7 @@ services:
       target: app 
       args:
         - GIT_HASH=${GIT_HASH:-unknown}
-    container_name: $bsensi_track_app
+    container_name: absensi_track_app
     restart: unless-stopped
     working_dir: /var/www/absensi-track
     env_file: .env
