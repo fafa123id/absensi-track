@@ -13,6 +13,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+COPY --from=composer_builder /app/vendor ./vendor
 RUN npm run build
 
 FROM php:8.3-fpm-alpine AS runtime
