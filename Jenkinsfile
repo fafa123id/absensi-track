@@ -15,6 +15,9 @@ pipeline {
                 withCredentials([file(credentialsId: 'absensi-track-env-prod', variable: 'DOTENV_FILE')]) {
                     sh "cp \$DOTENV_FILE .env"
                 }
+                withCredentials([file(credentialsId: 'absensi-track-env-prod-vite', variable: 'DOTENV_VITE_FILE')]) {
+                    sh "cp \$DOTENV_VITE_FILE .env"
+                }
                 
             }
         }
