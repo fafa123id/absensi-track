@@ -25,16 +25,16 @@ services:
       - shared-network
 
   nginx:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
     container_name: absensi_track_nginx
     restart: unless-stopped
     environment:
       - VIRTUAL_HOST=absensi-track.bornhub.cloud
       - LETSENCRYPT_HOST=absensi-track.bornhub.cloud
       - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - .:/var/www/absensi_track
     networks:
       - shared-network 
     depends_on:
