@@ -32,6 +32,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Departement::class, DepartementPolicy::class);
         Gate::policy(Company::class, EmployeePolicy::class);
         Gate::policy(Company::class, DashboardAccess::class);
-        // URL::forceScheme('https');
+        URL::forceScheme('https');
     }
 }
