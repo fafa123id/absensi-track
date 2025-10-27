@@ -44,12 +44,6 @@ pipeline {
         '''
       }
     }
-
-    stage('Smoke') {
-      steps {
-        sh 'docker compose ps'
-      }
-    }
   }
 
   post {

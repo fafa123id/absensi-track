@@ -23,8 +23,7 @@ services:
       - app_storage:/var/www/absensi-track/storage
     networks:
       - shared-network
-  #--- Service Nginx (Web Server & Reverse Proxy buat Laravel & Reverb) ---
-  nginx: # Ganti 'web' jadi 'nginx' biar jelas
+  nginx:
     image: nginx:alpine
     container_name: absensi_track_nginx
     restart: unless-stopped
