@@ -38,7 +38,9 @@ class AuthenticatedSessionController extends Controller
 
         broadcast(new SessionLoggedIn(
             Auth::id(),
-            request()->ip(),
+            $request->header('CF-Connecting-IP')        // Cloudflare (tunnel/CDN)
+                ?? $request->header('True-Client-IP')          // Beberapa proxy/CDN lain
+                ?? $request->ip(),
             now()->format('d M Y H:i'),
         ))->toOthers();
         // $deviceName = $this->guessDeviceName($request);
