@@ -42,7 +42,9 @@ class WifiController extends Controller
     }
     public function getWifi(Request $request)
     {
-        $ip = $request->ip();
+        $ip = $request->header('CF-Connecting-IP')        // Cloudflare (tunnel/CDN)
+            ?? $request->header('True-Client-IP')          // Beberapa proxy/CDN lain
+            ?? $request->ip();
         return response()->json([
             "ip" => $ip
         ]);

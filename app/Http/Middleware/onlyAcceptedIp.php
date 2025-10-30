@@ -17,7 +17,9 @@ class onlyAcceptedIp
     {
         $wifiIps = auth()->user()->company->wifis()->pluck('ip')->toArray();
 
-        if (in_array($request->ip(), $wifiIps)) {
+        if (in_array($request->header('CF-Connecting-IP')        // Cloudflare (tunnel/CDN)
+            ?? $request->header('True-Client-IP')          // Beberapa proxy/CDN lain
+            ?? $request->ip(), $wifiIps)) {
             return $next($request);
         }
         return redirect()->route("dashboard")->with("error", "Anda Tidak Berada di Wifi Perusahaan");
