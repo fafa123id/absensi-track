@@ -18,28 +18,16 @@ services:
     restart: unless-stopped
     working_dir: /var/www/absensi_track
     env_file: .env
+    environment:
+      - VIRTUAL_PORT=9000
+      - VIRTUAL_HOST=absensi-track.bornhub.cloud
+      - LETSENCRYPT_HOST=absensi-track.bornhub.cloud
+      - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     volumes:
       - app_storage:/var/www/absensi_track/storage
       - laravel_cache:/var/www/absensi_track/bootstrap/cache
     networks:
       - shared-network
-
-  nginx-absensi:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: web
-    container_name: absensi_track_nginx
-    restart: unless-stopped
-    environment:
-      - VIRTUAL_HOST=absensi-track.bornhub.cloud
-      - LETSENCRYPT_HOST=absensi-track.bornhub.cloud
-      - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
-    networks:
-      - shared-network 
-    depends_on:
-      - app-absensi  
-      - worker-absensi
 
   worker-absensi: 
     build:
