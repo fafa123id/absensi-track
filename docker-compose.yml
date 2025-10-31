@@ -32,7 +32,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: web
     container_name: absensi_track_nginx
     restart: unless-stopped
     environment:
