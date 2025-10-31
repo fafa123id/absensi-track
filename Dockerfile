@@ -90,5 +90,5 @@ RUN php artisan key:generate --force || true \
 RUN chown -R www-data:www-data storage bootstrap/cache \
  && chmod -R 775 storage bootstrap/cache
 
-EXPOSE 9000
+EXPOSE 9001
 CMD ["php-fpm"]
