@@ -19,7 +19,6 @@ services:
     working_dir: /var/www/absensi_track
     env_file: ./.env
     environment:
-      - VIRTUAL_PORT=9001
       - VIRTUAL_HOST=absensi-track.bornhub.cloud
       - LETSENCRYPT_HOST=absensi-track.bornhub.cloud
       - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
@@ -29,22 +28,22 @@ services:
     networks:
       - shared-network
 
-  # nginx-absensi:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #     target: web
-  #   container_name: absensi_track_nginx
-  #   restart: unless-stopped
-  #   environment:
-  #     - VIRTUAL_HOST=absensi-track.bornhub.cloud
-  #     - LETSENCRYPT_HOST=absensi-track.bornhub.cloud
-  #     - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
-  #   networks:
-  #     - shared-network 
-  #   depends_on:
-  #     - app-absensi  
-  #     - worker-absensi
+  nginx-absensi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    container_name: absensi_track_nginx
+    restart: unless-stopped
+    environment:
+      - VIRTUAL_HOST=absensi-track.bornhub.cloud
+      - LETSENCRYPT_HOST=absensi-track.bornhub.cloud
+      - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
+    networks:
+      - shared-network 
+    depends_on:
+      - app-absensi  
+      - worker-absensi
 
   worker-absensi: 
     build:
