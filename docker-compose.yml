@@ -32,7 +32,7 @@ services:
       - LETSENCRYPT_HOST=absensi-track.bornhub.cloud
       - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     volumes:
-      - ./public:/var/www/absensi_track/public
+      - .:/var/www/absensi_track:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - shared-network 
