@@ -13,26 +13,18 @@ services:
       dockerfile: Dockerfile
       args:
         - GIT_HASH=${GIT_HASH:-unknown}
-      target: app
     container_name: absensi_track_app
     restart: unless-stopped
     working_dir: /var/www/absensi_track
     env_file: ./.env
-    environment:
-      - VIRTUAL_HOST=absensi-track.bornhub.cloud
-      - LETSENCRYPT_HOST=absensi-track.bornhub.cloud
-      - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     volumes:
       - app_storage:/var/www/absensi_track/storage
       - laravel_cache:/var/www/absensi_track/bootstrap/cache
     networks:
       - shared-network
-
+  
   nginx-absensi:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: web
+    image: nginx:alpine
     container_name: absensi_track_nginx
     restart: unless-stopped
     environment:
