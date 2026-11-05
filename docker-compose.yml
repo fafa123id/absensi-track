@@ -10,6 +10,7 @@ services:
   app-absensi:
     build:
       context: .
+      target: app
       dockerfile: Dockerfile
       args:
         - GIT_HASH=${GIT_HASH:-unknown}
