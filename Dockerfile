@@ -1,7 +1,7 @@
 # =========================
 # Stage 0: PHP base (runtime + build deps)
 # =========================
-FROM php:8.2-fpm AS php_base
+FROM php:8.5.12-fpm AS php_base
 
 # Sistem & build deps untuk ekstensi
 RUN set -eux; \
@@ -31,7 +31,7 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 
 # Composer CLI
-COPY --from=composer:2.8.10 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.11.1 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/absensi_track
 
@@ -39,7 +39,7 @@ WORKDIR /var/www/absensi_track
 # =========================
 # Stage 1: Composer deps (vendor)
 # =========================
-FROM composer:2.8.10 AS composer_deps
+FROM composer:2.11.1 AS composer_deps
 WORKDIR /app
 COPY composer.json composer.lock ./
 
@@ -49,7 +49,7 @@ RUN composer install --no-dev --no-interaction --no-scripts --prefer-dist --no-p
 # =========================
 # Stage 2: Vite build (Node)
 # =========================
-FROM node:22-alpine AS vite_build
+FROM node:26.13-alpine AS vite_build
 WORKDIR /var/www/absensi_track
 
 COPY package*.json ./

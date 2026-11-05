@@ -28,8 +28,8 @@ services:
     container_name: absensi_track_nginx
     restart: unless-stopped
     environment:
-      - VIRTUAL_HOST=absensi-track.bornhub.cloud
-      - LETSENCRYPT_HOST=absensi-track.bornhub.cloud
+      - VIRTUAL_HOST=absensi-track.weboss.cloud
+      - LETSENCRYPT_HOST=absensi-track.weboss.cloud
       - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     volumes:
       - .:/var/www/absensi_track:ro
@@ -56,9 +56,9 @@ services:
       - app_storage:/var/www/absensi_track/storage
       - laravel_cache:/var/www/absensi_track/bootstrap/cache
     environment:
-      - VIRTUAL_HOST=reverb.absensi-track.bornhub.cloud
+      - VIRTUAL_HOST=reverb.absensi-track.weboss.cloud
       - VIRTUAL_PORT=8080
-      - LETSENCRYPT_HOST=reverb.absensi-track.bornhub.cloud
+      - LETSENCRYPT_HOST=reverb.absensi-track.weboss.cloud
       - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     networks:
       - shared-network 
